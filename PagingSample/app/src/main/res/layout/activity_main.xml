@@ -13,6 +13,8 @@
         android:layout_margin="10dp"
         android:hint="@string/enter_name"
         android:inputType="text"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
         app:layout_constraintEnd_toStartOf="@id/btn_insert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

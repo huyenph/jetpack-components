@@ -28,7 +28,7 @@ class CheeseAdapter : PagedListAdapter<Cheese, CheeseAdapter.CheeseViewHolder>(d
     class CheeseViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_cheese, parent, false)
     ) {
-        private var cheese: Cheese? = null
+        var cheese: Cheese? = null
 
         fun bindTo(cheese: Cheese?) {
             this.cheese = cheese
