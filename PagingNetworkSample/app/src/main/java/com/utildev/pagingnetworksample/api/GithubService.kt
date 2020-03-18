@@ -38,7 +38,7 @@ interface GithubService {
     }
 }
 
-fun searchRepo(
+fun searchRepos(
     service: GithubService,
     query: String,
     page: Int,
