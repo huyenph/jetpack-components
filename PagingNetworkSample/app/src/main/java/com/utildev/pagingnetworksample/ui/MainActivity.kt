@@ -1,7 +1,8 @@
-package com.utildev.pagingnetworksample
+package com.utildev.pagingnetworksample.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.utildev.pagingnetworksample.R
 
 class MainActivity : AppCompatActivity() {
 
