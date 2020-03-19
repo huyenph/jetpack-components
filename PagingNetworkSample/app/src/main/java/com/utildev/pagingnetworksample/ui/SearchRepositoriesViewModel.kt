@@ -25,7 +25,7 @@ class SearchRepositoriesViewModel(private val repository: GithubRepository) : Vi
         queryLiveData.postValue(query)
     }
 
-    private fun lastQueryValue(): String? = queryLiveData.value
+    fun lastQueryValue(): String? = queryLiveData.value
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
         if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
