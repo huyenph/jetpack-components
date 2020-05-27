@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mainFragment"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:orderInCategory="1"
+        android:contentDescription="Home"
+        android:title="Home" />
+    <item
+        android:id="@+id/detailFragment"
+        android:icon="@drawable/ic_playlist_add_check_black_24dp"
+        android:orderInCategory="2"
+        android:contentDescription="List"
+        android:title="List" />
+    <item
+        android:id="@+id/infoFragment"
+        android:icon="@drawable/ic_feedback_black_24dp"
+        android:orderInCategory="2"
+        android:contentDescription="Feedback"
+        android:title="Feedback" />
+</menu>

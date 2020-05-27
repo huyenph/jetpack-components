@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_detail.view.*
@@ -26,13 +29,19 @@ class DetailFragment : Fragment(), View.OnClickListener {
     private var param2: String? = null
 
     private var mView: View? = null
-    private val args: DetailFragmentArgs by navArgs()
+
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+
+        backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            Log.d("aaa", "back")
+            Toast.makeText(context, "back", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -48,7 +57,16 @@ class DetailFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("aaa", "${args.message}")
+    }
+
+    override fun onClick(v: View?) {
+        when(v!!.id) {
+            R.id.fmDetail_btn -> {
+//                val action = DetailFragmentDirections.detailFmToMainFm()
+//                mView!!.findNavController().navigate(R.id.action_global_mainFragment)
+                mView!!.findNavController().popBackStack()
+            }
+        }
     }
 
     private fun init() {
@@ -73,14 +91,5 @@ class DetailFragment : Fragment(), View.OnClickListener {
                     putString(ARG_PARAM2, param2)
                 }
             }
-    }
-
-    override fun onClick(v: View?) {
-        when(v!!.id) {
-            R.id.fmDetail_btn -> {
-                val action = DetailFragmentDirections.detailFmToMainFm()
-                mView!!.findNavController().popBackStack()
-            }
-        }
     }
 }

@@ -5,9 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import kotlinx.android.synthetic.main.fragment_main.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -16,15 +13,13 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [MainFragment.newInstance] factory method to
+ * Use the [InfoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MainFragment : Fragment(), View.OnClickListener {
+class InfoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
-    private var mView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,22 +34,7 @@ class MainFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_main, container, false)
-        init()
-        return mView
-    }
-
-    override fun onClick(v: View?) {
-        when (v!!.id) {
-            R.id.fmMain_btn -> {
-//                val action = MainFragmentDirections.mainFmToDetailFm()
-//                mView!!.findNavController().navigate(action)
-            }
-        }
-    }
-
-    private fun init() {
-        mView!!.fmMain_btn.setOnClickListener(this)
+        return inflater.inflate(R.layout.fragment_info, container, false)
     }
 
     companion object {
@@ -64,12 +44,12 @@ class MainFragment : Fragment(), View.OnClickListener {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment MainFragment.
+         * @return A new instance of fragment InfoFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            MainFragment().apply {
+            InfoFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
