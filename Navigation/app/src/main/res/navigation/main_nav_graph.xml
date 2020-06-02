@@ -11,15 +11,15 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
 
-<!--        <action-->
-<!--            android:id="@+id/mainFm_to_detailFm"-->
-<!--            app:destination="@id/detailFragment"-->
-<!--            app:enterAnim="@anim/activity_new_in"-->
-<!--            app:exitAnim="@anim/activity_old_out"-->
-<!--            app:popEnterAnim="@anim/activity_old_in"-->
-<!--            app:popExitAnim="@anim/activity_new_out"-->
-<!--            app:popUpTo="@id/mainFragment"-->
-<!--            app:popUpToInclusive="true" />-->
+        <!--        <action-->
+        <!--            android:id="@+id/mainFm_to_detailFm"-->
+        <!--            app:destination="@id/detailFragment"-->
+        <!--            app:enterAnim="@anim/activity_new_in"-->
+        <!--            app:exitAnim="@anim/activity_old_out"-->
+        <!--            app:popEnterAnim="@anim/activity_old_in"-->
+        <!--            app:popExitAnim="@anim/activity_new_out"-->
+        <!--            app:popUpTo="@id/mainFragment"-->
+        <!--            app:popUpToInclusive="true" />-->
 
     </fragment>
 
@@ -28,22 +28,22 @@
         android:name="com.utildev.navigation.DetailFragment"
         android:label="fragment_detail"
         tools:layout="@layout/fragment_detail">
-<!--        <action-->
-<!--            android:id="@+id/detailFm_to_mainFm"-->
-<!--            app:destination="@id/infoFragment"-->
-<!--            app:enterAnim="@anim/activity_new_in"-->
-<!--            app:exitAnim="@anim/activity_old_out"-->
-<!--            app:popEnterAnim="@anim/activity_old_in"-->
-<!--            app:popExitAnim="@anim/activity_new_out"-->
-<!--            app:popUpToInclusive="true" />-->
+        <!--        <action-->
+        <!--            android:id="@+id/detailFm_to_mainFm"-->
+        <!--            app:destination="@id/infoFragment"-->
+        <!--            app:enterAnim="@anim/activity_new_in"-->
+        <!--            app:exitAnim="@anim/activity_old_out"-->
+        <!--            app:popEnterAnim="@anim/activity_old_in"-->
+        <!--            app:popExitAnim="@anim/activity_new_out"-->
+        <!--            app:popUpToInclusive="true" />-->
     </fragment>
     <fragment
         android:id="@+id/infoFragment"
         android:name="com.utildev.navigation.InfoFragment"
         android:label="fragment_info"
         tools:layout="@layout/fragment_info">
-<!--        <action android:id="@+id/info_back"-->
-<!--            app:popUpToInclusive="true"/>-->
+        <!--        <action android:id="@+id/info_back"-->
+        <!--            app:popUpToInclusive="true"/>-->
     </fragment>
     <action
         android:id="@+id/action_global_mainFragment"
@@ -52,5 +52,8 @@
         app:popEnterAnim="@anim/activity_old_in"
         app:popExitAnim="@anim/activity_new_out"
         app:popUpTo="@id/mainFragment" />
+    <deepLink
+        android:id="@+id/deepLink"
+        app:uri="http://www.example.com/users/{id}" />
 
 </navigation>
