@@ -27,3 +27,11 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    room_version = "2.2.5"
+    lifecycle_version = "2.2.0"
+    paging_version = "2.1.2"
+    retrofit_version = "2.6.2"
+    okhttp_logging_interceptor_version = "4.7.2"
+}
