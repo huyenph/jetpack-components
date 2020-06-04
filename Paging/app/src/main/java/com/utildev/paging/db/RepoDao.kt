@@ -1,6 +1,6 @@
 package com.utildev.paging.db
 
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,5 +16,5 @@ interface RepoDao {
     // Look for repos that contain the query string in the name or in the description
     // and order those results descending, by the number of stars and then by name
     @Query("SELECT * FROM repos WHERE (name LIKE :queryString) OR (description LIKE :queryString) ORDER BY stars DESC, name ASC")
-    fun reposByName(queryString: String): LiveData<List<Repo>>
+    fun reposByName(queryString: String): DataSource.Factory<Int, Repo>
 }
