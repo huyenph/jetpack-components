@@ -6,6 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/**
+ * Singleton database object. Note that for a real app, you should probably use a Dependency
+ * Injection framework or Service Locator to create the singleton database.
+ */
 @Database(entities = [Cheese::class], version = 1)
 abstract class CheeseDB : RoomDatabase() {
     abstract fun cheeseDao(): CheeseDao
