@@ -120,6 +120,50 @@ class PagingRequestHelper(private val retryService: Executor) {
     @AnyThread
     fun addListener(listener: Listener) = listeners.add(listener)
 
+    /**
+     * Removes the given listener from the listeners list.
+     *
+     * @param listener The listener that will be removed.
+     * @return True if the listener is removed, false otherwise (e.g. it never existed)
+     */
+    fun removeListener(listener: Listener) = listeners.remove(listener)
+
+    /**
+     * Runs the given {@link Request} if no other requests in the given request type is already
+     * running.
+     * <p>
+     * If run, the request will be run in the current thread.
+     *
+     * @param type    The type of the request.
+     * @param request The request to run.
+     * @return True if the request is run, false otherwise.
+     */
+    @AnyThread
+    fun runIfNotRunning(type: RequestType, request: Request): Boolean {
+        val hasListeners = listeners.isNotEmpty()
+        val report: StatusReport? = null
+        synchronized(lock) {
+            val queue = requestQueues[type.ordinal]
+            if (queue.running != null) {
+                return false
+            }
+            queue.running = request
+            queue.status = Status.RUNNING
+            queue.failed = null
+            queue.lastError = null
+            if (hasListeners) {
+
+            }
+
+        }
+        if (report != null) {
+
+        }
+        val wrapper = RequestWrapper(request, this, type)
+        wrapper.run()
+        return true
+    }
+
     @FunctionalInterface
     interface Request {
         /**
@@ -215,10 +259,10 @@ class PagingRequestHelper(private val retryService: Executor) {
     }
 
     class RequestQueue(requestType: RequestType) {
-        val failed: RequestWrapper? = null
-        val running: Request? = null
-        val lastError: Throwable? = null
-        val status: Status = Status.SUCCESS
+        var failed: RequestWrapper? = null
+        var running: Request? = null
+        var lastError: Throwable? = null
+        var status: Status = Status.SUCCESS
     }
 
     companion object {
