@@ -57,10 +57,10 @@ class DBRedditPostRepository(
             boundaryCallback = boundaryCallback
         )
 
-//        return Listing(
-//            pagedList = livePagedList,
-//
-//            )
+        return Listing(
+            pagedList = livePagedList,
+networkState =
+            )
     }
 
     /**

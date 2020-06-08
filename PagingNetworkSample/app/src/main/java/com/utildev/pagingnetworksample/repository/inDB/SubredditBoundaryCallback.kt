@@ -20,5 +20,5 @@ class SubredditBoundaryCallback(
     private val ioExecutor: Executor,
     private val networkPageSize: Int
 ) : PagedList.BoundaryCallback<RedditPost>() {
-
+    val helper = Pagi
 }
