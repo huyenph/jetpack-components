@@ -1,6 +1,8 @@
 package com.utildev.pagingnetworksample.repository.inDB
 
 import androidx.paging.PagedList
+import androidx.paging.PagingRequestHelper
+import androidx.paging.createStatusLiveData
 import com.utildev.pagingnetworksample.api.RedditApi
 import com.utildev.pagingnetworksample.model.ListingResponse
 import com.utildev.pagingnetworksample.model.RedditPost
@@ -20,5 +22,6 @@ class SubredditBoundaryCallback(
     private val ioExecutor: Executor,
     private val networkPageSize: Int
 ) : PagedList.BoundaryCallback<RedditPost>() {
-    val helper = Pagi
+    val helper = PagingRequestHelper(ioExecutor)
+    val networkState = helper.createStatusLiveData()
 }

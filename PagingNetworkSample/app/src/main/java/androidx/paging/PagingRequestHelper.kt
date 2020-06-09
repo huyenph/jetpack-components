@@ -1,12 +1,9 @@
 package androidx.paging
 
-import android.os.Handler
 import androidx.annotation.AnyThread
 import androidx.annotation.GuardedBy
 import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import java.lang.IllegalStateException
-import java.util.*
+import androidx.annotation.VisibleForTesting
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
@@ -109,7 +106,7 @@ class PagingRequestHelper(private val retryService: Executor) {
         RequestQueue(RequestType.AFTER)
     )
 
-    val listeners: CopyOnWriteArrayList<Listener> = CopyOnWriteArrayList()
+    private val listeners: CopyOnWriteArrayList<Listener> = CopyOnWriteArrayList()
 
     /**
      * Adds a new listener that will be notified when any request changes {@link Status state}.
@@ -118,7 +115,7 @@ class PagingRequestHelper(private val retryService: Executor) {
      * @return True if it is added, false otherwise (e.g. it already exists in the list).
      */
     @AnyThread
-    fun addListener(listener: Listener) = listeners.add(listener)
+    fun addListener(listener: Listener): Boolean = listeners.add(listener)
 
     /**
      * Removes the given listener from the listeners list.
@@ -126,7 +123,7 @@ class PagingRequestHelper(private val retryService: Executor) {
      * @param listener The listener that will be removed.
      * @return True if the listener is removed, false otherwise (e.g. it never existed)
      */
-    fun removeListener(listener: Listener) = listeners.remove(listener)
+    fun removeListener(listener: Listener): Boolean = listeners.remove(listener)
 
     /**
      * Runs the given {@link Request} if no other requests in the given request type is already
@@ -141,7 +138,7 @@ class PagingRequestHelper(private val retryService: Executor) {
     @AnyThread
     fun runIfNotRunning(type: RequestType, request: Request): Boolean {
         val hasListeners = listeners.isNotEmpty()
-        val report: StatusReport? = null
+        var report: StatusReport? = null
         synchronized(lock) {
             val queue = requestQueues[type.ordinal]
             if (queue.running != null) {
@@ -152,16 +149,88 @@ class PagingRequestHelper(private val retryService: Executor) {
             queue.failed = null
             queue.lastError = null
             if (hasListeners) {
-
+                report = prepareStatusReportLocked()
             }
-
         }
         if (report != null) {
-
+            dispatchReport(report!!)
         }
         val wrapper = RequestWrapper(request, this, type)
         wrapper.run()
         return true
+    }
+
+    @GuardedBy("lock")
+    private fun prepareStatusReportLocked(): StatusReport {
+        val errors = arrayOf(
+            requestQueues[0].lastError,
+            requestQueues[1].lastError,
+            requestQueues[2].lastError
+        )
+        return StatusReport(
+            initial = getStatusForLocked(RequestType.INITIAL),
+            before = getStatusForLocked(RequestType.BEFORE),
+            after = getStatusForLocked(RequestType.AFTER),
+            errors = errors
+        )
+    }
+
+    @GuardedBy("lock")
+    private fun getStatusForLocked(type: RequestType): Status = requestQueues[type.ordinal].status
+
+    @AnyThread
+    @VisibleForTesting
+    fun recordResult(wrapper: RequestWrapper?, throwable: Throwable?) {
+        var report: StatusReport? = null
+        val success = throwable == null
+        val hasListeners = listeners.isNotEmpty()
+        synchronized(lock) {
+            val queue = requestQueues[wrapper!!.type.ordinal]
+            queue.running = null
+            queue.lastError = throwable
+            if (success) {
+                queue.failed = null
+                queue.status = Status.SUCCESS
+            } else {
+                queue.failed = wrapper
+                queue.status = Status.FAILED
+            }
+            if (hasListeners) {
+                report = prepareStatusReportLocked()
+            }
+        }
+        if (report != null) {
+            dispatchReport(report!!)
+        }
+    }
+
+    private fun dispatchReport(report: StatusReport) {
+        for (listener in listeners) {
+            listener.onStatusChange(report)
+        }
+    }
+
+    /**
+     * Retries all failed requests.
+     *
+     * @return True if any request is retried, false otherwise.
+     */
+    fun retryAllFailed(): Boolean {
+        val toBeRetried: Array<RequestWrapper?> = arrayOfNulls(RequestType.values().size)
+        var retried = false
+        synchronized(lock) {
+            for (i in RequestType.values().indices) {
+                toBeRetried[i] = requestQueues[i].failed
+                requestQueues[i].failed = null
+            }
+        }
+        for (failed in toBeRetried) {
+            if (failed != null) {
+                failed.retry(retryService)
+                retried = true
+            }
+        }
+        return retried
     }
 
     @FunctionalInterface
@@ -185,7 +254,7 @@ class PagingRequestHelper(private val retryService: Executor) {
              */
             fun recordSuccess() {
                 if (called.compareAndSet(false, true)) {
-
+                    helper.recordResult(wrapper, null)
                 } else {
                     throw IllegalStateException("Already called recordSuccess or recordFailure")
                 }
@@ -199,7 +268,7 @@ class PagingRequestHelper(private val retryService: Executor) {
              */
             fun recordFailure(@NonNull throwable: Throwable) {
                 if (called.compareAndSet(false, true)) {
-
+                    helper.recordResult(wrapper, throwable)
                 } else {
                     throw IllegalStateException("Already called recordSuccess or recordFailure")
                 }
@@ -283,7 +352,7 @@ class PagingRequestHelper(private val retryService: Executor) {
              * Status of the latest request that were submitted with {@link RequestType#AFTER}.
              */
             private val after: Status,
-            private val errors: Array<Throwable>
+            private val errors: Array<Throwable?>
         ) {
             /**
              * Convenience method to check if there are any running requests.
@@ -333,11 +402,11 @@ class PagingRequestHelper(private val retryService: Executor) {
         class RequestWrapper(
             private val request: Request,
             private val helper: PagingRequestHelper,
-            private val type: RequestType
+            val type: RequestType
         ) : Runnable {
             override fun run() = request.run(Request.Callback(this, helper = helper))
 
-            fun retry(service: Executor) = service.execute()
+            fun retry(service: Executor) = service.execute { helper.runIfNotRunning(type, request) }
         }
     }
 }
