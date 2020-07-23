@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
 import com.bumptech.glide.Glide
 import com.utildev.workmanager.databinding.ActivityBlurBinding
 
@@ -25,6 +27,26 @@ class BlurActivity : AppCompatActivity() {
 
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
 
+        viewModel.outputWorkInfoItems.observe(this, outputObserver())
+        viewModel.progressWorkInfoItems.observe(this, progressObserver())
+    }
+
+    private fun outputObserver(): Observer<List<WorkInfo>> {
+
+    }
+
+    private fun progressObserver(): Observer<List<WorkInfo>> {
+        return Observer { listOfWorkInfo ->
+            if (listOfWorkInfo.isNullOrEmpty()) {
+                return@Observer
+            }
+            listOfWorkInfo.forEach { workInfo ->
+                if (workInfo.state == WorkInfo.State.RUNNING) {
+                    val progress = workInfo.progress.getInt(PROGRESS, 0)
+                    binding.progressBar.progress = progress
+                }
+            }
+        }
     }
 
     /**
@@ -47,6 +69,7 @@ class BlurActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
             cancelButton.visibility = View.GONE
             goButton.visibility = View.VISIBLE
+            progressBar.progress = 0
         }
     }
 
